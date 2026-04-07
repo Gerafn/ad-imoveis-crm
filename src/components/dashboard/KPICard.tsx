@@ -1,4 +1,5 @@
 import type { ReactNode } from 'react'
+import { Link } from 'react-router-dom'
 
 interface KPICardProps {
   title: string
@@ -6,6 +7,7 @@ interface KPICardProps {
   subtitle?: string
   icon: ReactNode
   color: 'blue' | 'green' | 'orange' | 'red'
+  href?: string
 }
 
 const colors = {
@@ -15,10 +17,10 @@ const colors = {
   red: { bg: 'bg-red-50', icon: 'bg-red-500 text-white', value: 'text-red-700' },
 }
 
-export function KPICard({ title, value, subtitle, icon, color }: KPICardProps) {
+export function KPICard({ title, value, subtitle, icon, color, href }: KPICardProps) {
   const c = colors[color]
-  return (
-    <div className={`${c.bg} rounded-2xl p-5 shadow-sm border border-white flex items-center gap-4`}>
+  const inner = (
+    <div className={`${c.bg} rounded-2xl p-5 shadow-sm border border-white flex items-center gap-4 ${href ? 'cursor-pointer hover:brightness-95 transition-all' : ''}`}>
       <div className={`${c.icon} w-12 h-12 rounded-xl flex items-center justify-center shadow-md flex-shrink-0`}>
         {icon}
       </div>
@@ -29,4 +31,5 @@ export function KPICard({ title, value, subtitle, icon, color }: KPICardProps) {
       </div>
     </div>
   )
+  return href ? <Link to={href}>{inner}</Link> : inner
 }

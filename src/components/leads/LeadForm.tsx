@@ -35,7 +35,7 @@ export function LeadForm({ initial, customFields = [], onSubmit, onCancel }: Lea
   const initialTipo = initial?.tipo ?? 'Venda'
   const isOutro = initial ? !TIPOS_PRESET.includes(initial.tipo) : false
 
-  const { register, handleSubmit, formState: { errors }, watch, setValue } = useForm<FormData>({
+  const { register, handleSubmit, formState: { errors }, setValue } = useForm<FormData>({
     resolver: zodResolver(schema) as never,
     defaultValues: initial
       ? {
@@ -62,7 +62,7 @@ export function LeadForm({ initial, customFields = [], onSubmit, onCancel }: Lea
         },
   })
 
-  const tipoSelecionado = watch('tipo')
+  const [tipoSelecionado, setTipoSelecionado] = useState<string>(isOutro ? 'Outro' : initialTipo)
   const [tipoCustom, setTipoCustom] = useState(isOutro ? initialTipo : '')
   const [customValues, setCustomValues] = useState<Record<string, string>>(initial?.customFields || {})
 
@@ -84,7 +84,7 @@ export function LeadForm({ initial, customFields = [], onSubmit, onCancel }: Lea
           <Input placeholder="(11) 99999-9999" {...register('telefone')} />
         </FieldWrapper>
         <FieldWrapper label="Tipo" error={tipoSelecionado === 'Outro' && !tipoCustom ? 'Campo obrigatório' : undefined} required>
-          <Select {...register('tipo')} onChange={e => { setValue('tipo', e.target.value); if (e.target.value !== 'Outro') setTipoCustom('') }}>
+          <Select {...register('tipo')} onChange={e => { setValue('tipo', e.target.value); setTipoSelecionado(e.target.value); if (e.target.value !== 'Outro') setTipoCustom('') }}>
             {LEAD_TIPOS.map(t => <option key={t}>{t}</option>)}
           </Select>
           {tipoSelecionado === 'Outro' && (

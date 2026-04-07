@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { useSearchParams } from 'react-router-dom'
 import { Pencil, Trash2, Phone } from 'lucide-react'
 import type { Lead, LeadFase, LeadTemperature, LeadTipo, LeadMeio } from '../../types'
 import { LEAD_FASES, LEAD_MEIOS, LEAD_TIPOS, LEAD_TEMPERATURES } from '../../types'
@@ -18,9 +19,10 @@ interface LeadTableProps {
 const PAGE_SIZE = 15
 
 export function LeadTable({ leads, onEdit, onDelete }: LeadTableProps) {
+  const [searchParams] = useSearchParams()
   const [search, setSearch] = useState('')
   const [filterFase, setFilterFase] = useState<LeadFase | ''>('')
-  const [filterTemp, setFilterTemp] = useState<LeadTemperature | ''>('')
+  const [filterTemp, setFilterTemp] = useState<LeadTemperature | ''>((searchParams.get('temp') as LeadTemperature) || '')
   const [filterTipo, setFilterTipo] = useState<LeadTipo | ''>('')
   const [filterMeio, setFilterMeio] = useState<LeadMeio | ''>('')
   const [page, setPage] = useState(1)

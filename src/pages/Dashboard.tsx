@@ -83,6 +83,7 @@ export function Dashboard() {
           subtitle="Temperatura Quente"
           icon={<Flame size={22} />}
           color="red"
+          href="/leads?temp=Quente"
         />
       </div>
 
