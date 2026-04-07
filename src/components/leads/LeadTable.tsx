@@ -82,55 +82,90 @@ export function LeadTable({ leads, onEdit, onDelete }: LeadTableProps) {
           description="Tente ajustar os filtros ou adicione um novo lead."
         />
       ) : (
-        <div className="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
-          <div className="overflow-x-auto">
-            <table className="w-full text-sm">
-              <thead>
-                <tr className="border-b border-slate-100 bg-slate-50">
-                  <th className="text-left px-4 py-3 text-xs font-semibold text-slate-500 uppercase tracking-wide">Data</th>
-                  <th className="text-left px-4 py-3 text-xs font-semibold text-slate-500 uppercase tracking-wide">Cliente</th>
-                  <th className="text-left px-4 py-3 text-xs font-semibold text-slate-500 uppercase tracking-wide">Tipo</th>
-                  <th className="text-left px-4 py-3 text-xs font-semibold text-slate-500 uppercase tracking-wide">Canal</th>
-                  <th className="text-left px-4 py-3 text-xs font-semibold text-slate-500 uppercase tracking-wide">Valor</th>
-                  <th className="text-left px-4 py-3 text-xs font-semibold text-slate-500 uppercase tracking-wide">Fase</th>
-                  <th className="text-left px-4 py-3 text-xs font-semibold text-slate-500 uppercase tracking-wide">Temp.</th>
-                  <th className="px-4 py-3" />
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-slate-50">
-                {paginated.map(lead => (
-                  <tr key={lead.id} className={`hover:bg-slate-50 transition-colors ${tempRowBg[lead.temperatura]}`}>
-                    <td className="px-4 py-3 text-slate-500 whitespace-nowrap">{formatDate(lead.data)}</td>
-                    <td className="px-4 py-3">
-                      <p className="font-medium text-slate-800">{lead.nome}</p>
-                      <a href={`tel:${lead.telefone}`} className="text-xs text-slate-400 flex items-center gap-1 hover:text-[#1B4F72]">
-                        <Phone size={10} />{lead.telefone}
-                      </a>
-                    </td>
-                    <td className="px-4 py-3 text-slate-600 whitespace-nowrap">{lead.tipo}</td>
-                    <td className="px-4 py-3 text-slate-600 whitespace-nowrap">{lead.meio}</td>
-                    <td className="px-4 py-3 text-slate-700 font-mono whitespace-nowrap">{lead.valor > 0 ? formatCurrency(lead.valor) : '-'}</td>
-                    <td className="px-4 py-3"><FaseBadge value={lead.fase} /></td>
-                    <td className="px-4 py-3"><TemperatureBadge value={lead.temperatura} /></td>
-                    <td className="px-4 py-3">
-                      <div className="flex items-center gap-1 justify-end">
-                        <button onClick={() => onEdit(lead)} className="p-1.5 rounded-lg hover:bg-slate-100 text-slate-400 hover:text-[#1B4F72] transition-colors">
-                          <Pencil size={14} />
-                        </button>
-                        <button onClick={() => setDeleteId(lead.id)} className="p-1.5 rounded-lg hover:bg-red-50 text-slate-400 hover:text-red-500 transition-colors">
-                          <Trash2 size={14} />
-                        </button>
-                      </div>
-                    </td>
+        <div>
+          {/* Cards — mobile */}
+          <div className="flex flex-col gap-3 md:hidden">
+            {paginated.map(lead => (
+              <div key={lead.id} className={`bg-white rounded-2xl shadow-sm border border-slate-100 p-4 ${tempRowBg[lead.temperatura]}`}>
+                <div className="flex items-start justify-between gap-2 mb-2">
+                  <div>
+                    <p className="font-semibold text-slate-800">{lead.nome}</p>
+                    <a href={`tel:${lead.telefone}`} className="text-xs text-slate-400 flex items-center gap-1">
+                      <Phone size={10} />{lead.telefone}
+                    </a>
+                  </div>
+                  <div className="flex items-center gap-1 flex-shrink-0">
+                    <button onClick={() => onEdit(lead)} className="p-1.5 rounded-lg hover:bg-slate-100 text-slate-400 hover:text-[#1B4F72] transition-colors">
+                      <Pencil size={14} />
+                    </button>
+                    <button onClick={() => setDeleteId(lead.id)} className="p-1.5 rounded-lg hover:bg-red-50 text-slate-400 hover:text-red-500 transition-colors">
+                      <Trash2 size={14} />
+                    </button>
+                  </div>
+                </div>
+                <div className="flex flex-wrap gap-2 mt-2">
+                  <TemperatureBadge value={lead.temperatura} />
+                  <FaseBadge value={lead.fase} />
+                  <span className="text-xs bg-slate-100 text-slate-600 px-2 py-0.5 rounded-full">{lead.tipo}</span>
+                  <span className="text-xs bg-slate-100 text-slate-600 px-2 py-0.5 rounded-full">{lead.meio}</span>
+                  {lead.valor > 0 && <span className="text-xs bg-slate-100 text-slate-700 font-mono px-2 py-0.5 rounded-full">{formatCurrency(lead.valor)}</span>}
+                </div>
+                <p className="text-xs text-slate-400 mt-2">{formatDate(lead.data)}</p>
+              </div>
+            ))}
+          </div>
+
+          {/* Tabela — desktop */}
+          <div className="hidden md:block bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
+            <div className="overflow-x-auto">
+              <table className="w-full text-sm">
+                <thead>
+                  <tr className="border-b border-slate-100 bg-slate-50">
+                    <th className="text-left px-4 py-3 text-xs font-semibold text-slate-500 uppercase tracking-wide">Data</th>
+                    <th className="text-left px-4 py-3 text-xs font-semibold text-slate-500 uppercase tracking-wide">Cliente</th>
+                    <th className="text-left px-4 py-3 text-xs font-semibold text-slate-500 uppercase tracking-wide">Tipo</th>
+                    <th className="text-left px-4 py-3 text-xs font-semibold text-slate-500 uppercase tracking-wide">Canal</th>
+                    <th className="text-left px-4 py-3 text-xs font-semibold text-slate-500 uppercase tracking-wide">Valor</th>
+                    <th className="text-left px-4 py-3 text-xs font-semibold text-slate-500 uppercase tracking-wide">Fase</th>
+                    <th className="text-left px-4 py-3 text-xs font-semibold text-slate-500 uppercase tracking-wide">Temp.</th>
+                    <th className="px-4 py-3" />
                   </tr>
-                ))}
-              </tbody>
-            </table>
+                </thead>
+                <tbody className="divide-y divide-slate-50">
+                  {paginated.map(lead => (
+                    <tr key={lead.id} className={`hover:bg-slate-50 transition-colors ${tempRowBg[lead.temperatura]}`}>
+                      <td className="px-4 py-3 text-slate-500 whitespace-nowrap">{formatDate(lead.data)}</td>
+                      <td className="px-4 py-3">
+                        <p className="font-medium text-slate-800">{lead.nome}</p>
+                        <a href={`tel:${lead.telefone}`} className="text-xs text-slate-400 flex items-center gap-1 hover:text-[#1B4F72]">
+                          <Phone size={10} />{lead.telefone}
+                        </a>
+                      </td>
+                      <td className="px-4 py-3 text-slate-600 whitespace-nowrap">{lead.tipo}</td>
+                      <td className="px-4 py-3 text-slate-600 whitespace-nowrap">{lead.meio}</td>
+                      <td className="px-4 py-3 text-slate-700 font-mono whitespace-nowrap">{lead.valor > 0 ? formatCurrency(lead.valor) : '-'}</td>
+                      <td className="px-4 py-3"><FaseBadge value={lead.fase} /></td>
+                      <td className="px-4 py-3"><TemperatureBadge value={lead.temperatura} /></td>
+                      <td className="px-4 py-3">
+                        <div className="flex items-center gap-1 justify-end">
+                          <button onClick={() => onEdit(lead)} className="p-1.5 rounded-lg hover:bg-slate-100 text-slate-400 hover:text-[#1B4F72] transition-colors">
+                            <Pencil size={14} />
+                          </button>
+                          <button onClick={() => setDeleteId(lead.id)} className="p-1.5 rounded-lg hover:bg-red-50 text-slate-400 hover:text-red-500 transition-colors">
+                            <Trash2 size={14} />
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           </div>
 
           {/* Pagination */}
           {totalPages > 1 && (
-            <div className="flex items-center justify-between px-4 py-3 border-t border-slate-100">
+            <div className="flex items-center justify-between px-4 py-3 mt-2 bg-white rounded-2xl border border-slate-100">
               <span className="text-xs text-slate-400">Página {page} de {totalPages}</span>
               <div className="flex gap-2">
                 <Button variant="secondary" size="sm" disabled={page === 1} onClick={() => setPage(p => p - 1)}>Anterior</Button>
