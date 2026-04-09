@@ -1,11 +1,12 @@
 import { useState } from 'react'
 import { useSearchParams } from 'react-router-dom'
-import { Pencil, Trash2, Phone } from 'lucide-react'
+import { Pencil, Trash2 } from 'lucide-react'
 import type { Lead, LeadFase, LeadTemperature, LeadTipo, LeadMeio } from '../../types'
 import { LEAD_FASES, LEAD_MEIOS, LEAD_TIPOS, LEAD_TEMPERATURES } from '../../types'
 import { TemperatureBadge, FaseBadge } from '../ui/Badge'
 import { Button } from '../ui/Button'
 import { Select, Input } from '../ui/FormField'
+import { PhoneMenu } from '../ui/PhoneMenu'
 import { ConfirmDialog } from '../ui/ConfirmDialog'
 import { EmptyState } from '../ui/EmptyState'
 import { formatCurrency, formatDate } from '../../utils'
@@ -122,9 +123,7 @@ export function LeadTable({ leads, onEdit, onDelete }: LeadTableProps) {
                 <div className="flex items-start justify-between gap-2 mb-2">
                   <div>
                     <p className="font-semibold text-slate-800">{lead.nome}</p>
-                    <a href={`tel:${lead.telefone}`} className="text-xs text-slate-400 flex items-center gap-1">
-                      <Phone size={10} />{lead.telefone}
-                    </a>
+                    <PhoneMenu telefone={lead.telefone} />
                   </div>
                   <div className="flex items-center gap-1 flex-shrink-0">
                     <button onClick={() => onEdit(lead)} className="p-1.5 rounded-lg hover:bg-slate-100 text-slate-400 hover:text-[#1B4F72] transition-colors">
@@ -169,9 +168,7 @@ export function LeadTable({ leads, onEdit, onDelete }: LeadTableProps) {
                       <td className="px-4 py-3 text-slate-500 whitespace-nowrap">{formatDate(lead.data)}</td>
                       <td className="px-4 py-3">
                         <p className="font-medium text-slate-800">{lead.nome}</p>
-                        <a href={`tel:${lead.telefone}`} className="text-xs text-slate-400 flex items-center gap-1 hover:text-[#1B4F72]">
-                          <Phone size={10} />{lead.telefone}
-                        </a>
+                        <PhoneMenu telefone={lead.telefone} />
                       </td>
                       <td className="px-4 py-3 text-slate-600 whitespace-nowrap">{lead.tipo}</td>
                       <td className="px-4 py-3 text-slate-600 whitespace-nowrap">{lead.meio}</td>

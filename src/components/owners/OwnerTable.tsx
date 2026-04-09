@@ -1,10 +1,11 @@
 import { useState } from 'react'
-import { Pencil, Trash2, Phone, CheckCircle, XCircle } from 'lucide-react'
+import { Pencil, Trash2, CheckCircle, XCircle } from 'lucide-react'
 import type { Owner, OwnerTipo, OwnerNegocio } from '../../types'
 import { OWNER_TIPOS, OWNER_NEGOCIOS } from '../../types'
 import { Badge } from '../ui/Badge'
 import { Button } from '../ui/Button'
 import { Select, Input } from '../ui/FormField'
+import { PhoneMenu } from '../ui/PhoneMenu'
 import { ConfirmDialog } from '../ui/ConfirmDialog'
 import { EmptyState } from '../ui/EmptyState'
 import { formatDate } from '../../utils'
@@ -80,9 +81,7 @@ export function OwnerTable({ owners, onEdit, onDelete }: OwnerTableProps) {
                     <td className="px-4 py-3 text-slate-500 whitespace-nowrap">{formatDate(owner.data)}</td>
                     <td className="px-4 py-3">
                       <p className="font-medium text-slate-800">{owner.nome}</p>
-                      <a href={`tel:${owner.telefone}`} className="text-xs text-slate-400 flex items-center gap-1 hover:text-[#1B4F72]">
-                        <Phone size={10} />{owner.telefone}
-                      </a>
+                      <PhoneMenu telefone={owner.telefone} />
                     </td>
                     <td className="px-4 py-3"><Badge color="blue">{owner.tipo}</Badge></td>
                     <td className="px-4 py-3 text-slate-600">{owner.negocio}</td>

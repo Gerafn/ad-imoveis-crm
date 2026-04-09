@@ -57,6 +57,17 @@ export interface Owner {
   createdAt: string
 }
 
+export interface Reminder {
+  id: string
+  titulo: string
+  descricao: string
+  data: string
+  hora: string
+  leadId: string | null
+  concluido: boolean
+  createdAt: string
+}
+
 export interface Goals {
   vendaMensal: number
   aluguelMensal: number

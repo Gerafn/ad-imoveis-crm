@@ -1,5 +1,6 @@
 import type { ReactNode } from 'react'
 import { Sidebar } from './Sidebar'
+import { ReminderToast } from '../reminders/ReminderToast'
 
 export function Layout({ children }: { children: ReactNode }) {
   return (
@@ -10,6 +11,7 @@ export function Layout({ children }: { children: ReactNode }) {
           {children}
         </div>
       </main>
+      <ReminderToast />
     </div>
   )
 }
