@@ -25,6 +25,8 @@ export function LeadTable({ leads, onEdit, onDelete }: LeadTableProps) {
   const [filterTemp, setFilterTemp] = useState<LeadTemperature | ''>((searchParams.get('temp') as LeadTemperature) || '')
   const [filterTipo, setFilterTipo] = useState<LeadTipo | ''>('')
   const [filterMeio, setFilterMeio] = useState<LeadMeio | ''>('')
+  const [filterDataDe, setFilterDataDe] = useState('')
+  const [filterDataAte, setFilterDataAte] = useState('')
   const [page, setPage] = useState(1)
   const [deleteId, setDeleteId] = useState<string | null>(null)
 
@@ -34,6 +36,8 @@ export function LeadTable({ leads, onEdit, onDelete }: LeadTableProps) {
     if (filterTemp && l.temperatura !== filterTemp) return false
     if (filterTipo && l.tipo !== filterTipo) return false
     if (filterMeio && l.meio !== filterMeio) return false
+    if (filterDataDe && l.data < filterDataDe) return false
+    if (filterDataAte && l.data > filterDataAte) return false
     return true
   })
 
@@ -49,7 +53,7 @@ export function LeadTable({ leads, onEdit, onDelete }: LeadTableProps) {
   return (
     <div>
       {/* Filters */}
-      <div className="grid grid-cols-2 lg:grid-cols-5 gap-3 mb-4">
+      <div className="grid grid-cols-2 lg:grid-cols-5 gap-3 mb-2">
         <Input
           placeholder="Buscar por nome..."
           value={search}
@@ -72,6 +76,34 @@ export function LeadTable({ leads, onEdit, onDelete }: LeadTableProps) {
           <option value="">Canal</option>
           {LEAD_MEIOS.map(m => <option key={m}>{m}</option>)}
         </Select>
+      </div>
+      <div className="flex flex-wrap items-center gap-3 mb-4">
+        <div className="flex items-center gap-2">
+          <span className="text-xs text-slate-500 whitespace-nowrap">De</span>
+          <Input
+            type="date"
+            value={filterDataDe}
+            onChange={e => { setFilterDataDe(e.target.value); setPage(1) }}
+            className="w-36"
+          />
+        </div>
+        <div className="flex items-center gap-2">
+          <span className="text-xs text-slate-500 whitespace-nowrap">Até</span>
+          <Input
+            type="date"
+            value={filterDataAte}
+            onChange={e => { setFilterDataAte(e.target.value); setPage(1) }}
+            className="w-36"
+          />
+        </div>
+        {(filterDataDe || filterDataAte) && (
+          <button
+            onClick={() => { setFilterDataDe(''); setFilterDataAte(''); setPage(1) }}
+            className="text-xs text-slate-400 hover:text-red-500 transition-colors"
+          >
+            Limpar datas
+          </button>
+        )}
       </div>
 
       <p className="text-xs text-slate-400 mb-3">{filtered.length} lead{filtered.length !== 1 ? 's' : ''} encontrado{filtered.length !== 1 ? 's' : ''}</p>

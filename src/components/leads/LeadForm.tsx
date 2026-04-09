@@ -15,7 +15,7 @@ const schema = z.object({
   telefone: z.string().min(1, 'Campo obrigatório'),
   tipo: z.string().min(1, 'Campo obrigatório'),
   imovel: z.string().default(''),
-  meio: z.enum(['Facebook', 'Instagram', 'Site', 'Indicação', 'Imobiliária']),
+  meio: z.enum(['Facebook', 'Instagram', 'Site', 'Indicação', 'Imobiliária', 'Placa', 'Campanha', 'Marketplace', 'Outro']),
   valor: z.coerce.number().min(0).default(0),
   fase: z.enum(['Contato', 'Qualificação', 'Agendamento', 'Visita', 'Negociação', 'Proposta Comercial', 'Contrato']),
   temperatura: z.enum(['Frio', 'Morno', 'Quente']),

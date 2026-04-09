@@ -8,7 +8,7 @@ export type LeadFase =
   | 'Proposta Comercial'
   | 'Contrato'
 export type LeadTipo = string
-export type LeadMeio = 'Facebook' | 'Instagram' | 'Site' | 'Indicação' | 'Imobiliária'
+export type LeadMeio = 'Facebook' | 'Instagram' | 'Site' | 'Indicação' | 'Imobiliária' | 'Placa' | 'Campanha' | 'Marketplace' | 'Outro'
 
 export interface Lead {
   id: string
@@ -29,6 +29,17 @@ export interface Lead {
 export type OwnerTipo = 'Casa' | 'Apartamento' | 'Terreno' | 'Sala Comercial' | 'Investidor'
 export type OwnerNegocio = 'Venda' | 'Aluguel' | 'Avaliar para Venda' | 'Venda e Aluguel'
 
+export type OwnerDocumentacao =
+  | 'OK'
+  | 'Contrato de Compra e Venda'
+  | 'Escritura'
+  | 'Inventário'
+  | 'Matrícula'
+  | 'IPTU'
+  | 'Habite-se'
+  | 'Procuração'
+  | 'Pendente'
+
 export interface Owner {
   id: string
   data: string
@@ -40,6 +51,8 @@ export interface Owner {
   endereco: string
   exclusividade: boolean
   captacao: string
+  documentacao: OwnerDocumentacao | ''
+  observacoes: string
   customFields: Record<string, string>
   createdAt: string
 }
@@ -67,7 +80,18 @@ export const LEAD_FASES: LeadFase[] = [
   'Contrato',
 ]
 
-export const LEAD_MEIOS: LeadMeio[] = ['Facebook', 'Instagram', 'Site', 'Indicação', 'Imobiliária']
+export const LEAD_MEIOS: LeadMeio[] = ['Facebook', 'Instagram', 'Site', 'Indicação', 'Imobiliária', 'Placa', 'Campanha', 'Marketplace', 'Outro']
+export const OWNER_DOCUMENTACOES: OwnerDocumentacao[] = [
+  'OK',
+  'Contrato de Compra e Venda',
+  'Escritura',
+  'Inventário',
+  'Matrícula',
+  'IPTU',
+  'Habite-se',
+  'Procuração',
+  'Pendente',
+]
 export const LEAD_TIPOS: string[] = ['Venda', 'Aluguel', 'Aluguel e Venda', 'Outro']
 export const LEAD_TEMPERATURES: LeadTemperature[] = ['Frio', 'Morno', 'Quente']
 export const OWNER_TIPOS: OwnerTipo[] = ['Casa', 'Apartamento', 'Terreno', 'Sala Comercial', 'Investidor']

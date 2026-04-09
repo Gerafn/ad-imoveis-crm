@@ -69,6 +69,7 @@ export function OwnerTable({ owners, onEdit, onDelete }: OwnerTableProps) {
                   <th className="text-left px-4 py-3 text-xs font-semibold text-slate-500 uppercase tracking-wide">Negócio</th>
                   <th className="text-left px-4 py-3 text-xs font-semibold text-slate-500 uppercase tracking-wide">Escritura</th>
                   <th className="text-left px-4 py-3 text-xs font-semibold text-slate-500 uppercase tracking-wide">Exclusividade</th>
+                  <th className="text-left px-4 py-3 text-xs font-semibold text-slate-500 uppercase tracking-wide">Documentação</th>
                   <th className="text-left px-4 py-3 text-xs font-semibold text-slate-500 uppercase tracking-wide">Endereço</th>
                   <th className="px-4 py-3" />
                 </tr>
@@ -95,6 +96,7 @@ export function OwnerTable({ owners, onEdit, onDelete }: OwnerTableProps) {
                         ? <Badge color="green">Sim</Badge>
                         : <span className="text-slate-400 text-xs">Não</span>}
                     </td>
+                    <td className="px-4 py-3 text-slate-600 whitespace-nowrap">{owner.documentacao || '-'}</td>
                     <td className="px-4 py-3 text-slate-500 max-w-xs truncate">{owner.endereco || '-'}</td>
                     <td className="px-4 py-3">
                       <div className="flex items-center gap-1 justify-end">

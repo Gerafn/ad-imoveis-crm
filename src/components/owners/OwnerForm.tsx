@@ -2,8 +2,8 @@ import { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
-import type { Owner, CustomField } from '../../types'
-import { OWNER_TIPOS, OWNER_NEGOCIOS } from '../../types'
+import type { Owner, CustomField, OwnerDocumentacao } from '../../types'
+import { OWNER_TIPOS, OWNER_NEGOCIOS, OWNER_DOCUMENTACOES } from '../../types'
 import { FieldWrapper, Input, Select, Textarea, Toggle } from '../ui/FormField'
 import { Button } from '../ui/Button'
 
@@ -15,6 +15,8 @@ const schema = z.object({
   negocio: z.enum(['Venda', 'Aluguel', 'Avaliar para Venda', 'Venda e Aluguel']),
   endereco: z.string().default(''),
   captacao: z.string().default(''),
+  documentacao: z.string().default(''),
+  observacoes: z.string().default(''),
 })
 
 type FormData = z.infer<typeof schema>
@@ -38,6 +40,8 @@ export function OwnerForm({ initial, customFields = [], onSubmit, onCancel }: Ow
           negocio: initial.negocio,
           endereco: initial.endereco,
           captacao: initial.captacao,
+          documentacao: initial.documentacao || '',
+          observacoes: initial.observacoes || '',
         }
       : {
           data: new Date().toISOString().split('T')[0],
@@ -45,6 +49,8 @@ export function OwnerForm({ initial, customFields = [], onSubmit, onCancel }: Ow
           negocio: 'Venda' as const,
           endereco: '',
           captacao: '',
+          documentacao: '',
+          observacoes: '',
         },
   })
 
@@ -53,7 +59,13 @@ export function OwnerForm({ initial, customFields = [], onSubmit, onCancel }: Ow
   const [customValues, setCustomValues] = useState<Record<string, string>>(initial?.customFields || {})
 
   const handleFormSubmit = (data: FormData) => {
-    onSubmit({ ...data, escritura, exclusividade, customFields: customValues })
+    onSubmit({
+      ...data,
+      escritura,
+      exclusividade,
+      documentacao: data.documentacao as OwnerDocumentacao | '',
+      customFields: customValues,
+    })
   }
 
   return (
@@ -89,8 +101,19 @@ export function OwnerForm({ initial, customFields = [], onSubmit, onCancel }: Ow
         <Toggle checked={exclusividade} onChange={setExclusividade} label="Exclusividade" />
       </div>
 
-      <FieldWrapper label="Captação / Observações">
-        <Textarea rows={3} placeholder="Detalhes sobre captação..." {...register('captacao')} />
+      <FieldWrapper label="Documentação">
+        <Select {...register('documentacao')}>
+          <option value="">Selecione...</option>
+          {OWNER_DOCUMENTACOES.map(d => <option key={d}>{d}</option>)}
+        </Select>
+      </FieldWrapper>
+
+      <FieldWrapper label="Captação">
+        <Textarea rows={2} placeholder="Detalhes sobre captação..." {...register('captacao')} />
+      </FieldWrapper>
+
+      <FieldWrapper label="Observações">
+        <Textarea rows={3} placeholder="Notas sobre o proprietário..." {...register('observacoes')} />
       </FieldWrapper>
 
       {customFields.filter(f => f.module === 'owners').map(field => (
