@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { X, Plus, Check, Trash2, Bell, Clock } from 'lucide-react'
 import type { Reminder } from '../../types'
-import { Input, FieldWrapper, Select, Textarea } from '../ui/FormField'
+import { Input, FieldWrapper, Textarea } from '../ui/FormField'
 import { Button } from '../ui/Button'
 import { formatDate } from '../../utils'
 
@@ -9,26 +9,23 @@ interface ReminderPanelProps {
   open: boolean
   onClose: () => void
   reminders: Reminder[]
-  leads: { id: string; nome: string }[]
   onAdd: (data: Omit<Reminder, 'id' | 'createdAt'>) => void
   onToggle: (id: string, concluido: boolean) => void
   onDelete: (id: string) => void
 }
 
-function ReminderForm({ onSave, onCancel, leads }: {
+function ReminderForm({ onSave, onCancel }: {
   onSave: (data: Omit<Reminder, 'id' | 'createdAt'>) => void
   onCancel: () => void
-  leads: { id: string; nome: string }[]
 }) {
   const [titulo, setTitulo] = useState('')
   const [descricao, setDescricao] = useState('')
   const [data, setData] = useState(new Date().toISOString().split('T')[0])
   const [hora, setHora] = useState('09:00')
-  const [leadId, setLeadId] = useState('')
 
   const handleSave = () => {
     if (!titulo.trim()) return
-    onSave({ titulo, descricao, data, hora, leadId: leadId || null, concluido: false })
+    onSave({ titulo, descricao, data, hora, leadId: null, concluido: false })
   }
 
   return (
@@ -45,12 +42,6 @@ function ReminderForm({ onSave, onCancel, leads }: {
           <Input type="time" value={hora} onChange={e => setHora(e.target.value)} />
         </FieldWrapper>
       </div>
-      <FieldWrapper label="Lead (opcional)">
-        <Select value={leadId} onChange={e => setLeadId(e.target.value)}>
-          <option value="">Nenhum</option>
-          {leads.map(l => <option key={l.id} value={l.id}>{l.nome}</option>)}
-        </Select>
-      </FieldWrapper>
       <FieldWrapper label="Observação">
         <Textarea rows={2} placeholder="Detalhes..." value={descricao} onChange={e => setDescricao(e.target.value)} />
       </FieldWrapper>
@@ -63,20 +54,15 @@ function ReminderForm({ onSave, onCancel, leads }: {
 }
 
 function isVencido(data: string, hora: string) {
-  try {
-    return new Date(`${data}T${hora}`) < new Date()
-  } catch {
-    return false
-  }
+  try { return new Date(`${data}T${hora}`) < new Date() } catch { return false }
 }
 
 function isHoje(data: string) {
   return data === new Date().toISOString().split('T')[0]
 }
 
-function ReminderCard({ reminder, leadNome, onToggle, onDelete, concluido }: {
+function ReminderCard({ reminder, onToggle, onDelete, concluido }: {
   reminder: Reminder
-  leadNome?: string
   onToggle: () => void
   onDelete: () => void
   concluido?: boolean
@@ -95,15 +81,10 @@ function ReminderCard({ reminder, leadNome, onToggle, onDelete, concluido }: {
       <div className="flex-1 min-w-0">
         <p className={`text-sm font-medium ${concluido ? 'line-through text-slate-400' : 'text-slate-800'}`}>{reminder.titulo}</p>
         {reminder.descricao && <p className="text-xs text-slate-500 mt-0.5 truncate">{reminder.descricao}</p>}
-        <div className="flex items-center gap-2 mt-1 flex-wrap">
-          <span className={`text-xs flex items-center gap-1 ${vencido ? 'text-red-500 font-medium' : 'text-slate-400'}`}>
-            <Clock size={10} />
-            {hoje ? 'Hoje' : formatDate(reminder.data)} às {reminder.hora}
-          </span>
-          {leadNome && (
-            <span className="text-xs bg-[#1B4F72]/10 text-[#1B4F72] px-1.5 py-0.5 rounded-full truncate max-w-[120px]">{leadNome}</span>
-          )}
-        </div>
+        <span className={`text-xs flex items-center gap-1 mt-1 ${vencido ? 'text-red-500 font-medium' : 'text-slate-400'}`}>
+          <Clock size={10} />
+          {hoje ? 'Hoje' : formatDate(reminder.data)} às {reminder.hora}
+        </span>
       </div>
       <button onClick={onDelete} className="flex-shrink-0 p-1 rounded-lg hover:bg-red-50 text-slate-300 hover:text-red-400 transition-colors">
         <Trash2 size={13} />
@@ -112,24 +93,16 @@ function ReminderCard({ reminder, leadNome, onToggle, onDelete, concluido }: {
   )
 }
 
-export function ReminderPanel({ open, onClose, reminders, leads, onAdd, onToggle, onDelete }: ReminderPanelProps) {
+export function ReminderPanel({ open, onClose, reminders, onAdd, onToggle, onDelete }: ReminderPanelProps) {
   const [showForm, setShowForm] = useState(false)
   const [showConcluidos, setShowConcluidos] = useState(false)
 
   const pendentes = reminders.filter(r => !r.concluido)
   const concluidos = reminders.filter(r => r.concluido)
-  const leadMap = Object.fromEntries(leads.map(l => [l.id, l.nome]))
-
-  const handleSave = (data: Omit<Reminder, 'id' | 'createdAt'>) => {
-    onAdd(data)
-    setShowForm(false)
-  }
 
   return (
     <>
-      {open && (
-        <div className="fixed inset-0 bg-black/30 z-40 lg:hidden" onClick={onClose} />
-      )}
+      {open && <div className="fixed inset-0 bg-black/30 z-40 lg:hidden" onClick={onClose} />}
       <div className={`fixed top-0 right-0 h-full w-full sm:w-96 bg-white shadow-2xl z-50 flex flex-col transition-transform duration-300 ${open ? 'translate-x-0' : 'translate-x-full'}`}>
         <div className="flex items-center justify-between px-5 py-4 border-b border-slate-100">
           <div className="flex items-center gap-2">
@@ -154,9 +127,7 @@ export function ReminderPanel({ open, onClose, reminders, leads, onAdd, onToggle
             </button>
           )}
 
-          {showForm && (
-            <ReminderForm onSave={handleSave} onCancel={() => setShowForm(false)} leads={leads} />
-          )}
+          {showForm && <ReminderForm onSave={d => { onAdd(d); setShowForm(false) }} onCancel={() => setShowForm(false)} />}
 
           {pendentes.length === 0 && !showForm && (
             <div className="text-center py-10">
@@ -166,33 +137,17 @@ export function ReminderPanel({ open, onClose, reminders, leads, onAdd, onToggle
           )}
 
           {pendentes.map(r => (
-            <ReminderCard
-              key={r.id}
-              reminder={r}
-              leadNome={r.leadId ? leadMap[r.leadId] : undefined}
-              onToggle={() => onToggle(r.id, true)}
-              onDelete={() => onDelete(r.id)}
-            />
+            <ReminderCard key={r.id} reminder={r} onToggle={() => onToggle(r.id, true)} onDelete={() => onDelete(r.id)} />
           ))}
 
           {concluidos.length > 0 && (
-            <button
-              onClick={() => setShowConcluidos(p => !p)}
-              className="text-xs text-slate-400 hover:text-slate-600 transition-colors w-full text-center pt-2"
-            >
+            <button onClick={() => setShowConcluidos(p => !p)} className="text-xs text-slate-400 hover:text-slate-600 transition-colors w-full text-center pt-2">
               {showConcluidos ? 'Ocultar' : `Ver ${concluidos.length} concluído${concluidos.length !== 1 ? 's' : ''}`}
             </button>
           )}
 
           {showConcluidos && concluidos.map(r => (
-            <ReminderCard
-              key={r.id}
-              reminder={r}
-              leadNome={r.leadId ? leadMap[r.leadId] : undefined}
-              onToggle={() => onToggle(r.id, false)}
-              onDelete={() => onDelete(r.id)}
-              concluido
-            />
+            <ReminderCard key={r.id} reminder={r} onToggle={() => onToggle(r.id, false)} onDelete={() => onDelete(r.id)} concluido />
           ))}
         </div>
       </div>

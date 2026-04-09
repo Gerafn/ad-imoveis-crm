@@ -1,17 +1,15 @@
 import type { ReactNode } from 'react'
 import { Sidebar } from './Sidebar'
 import { ReminderToast } from '../reminders/ReminderToast'
-import { useReminderStore, useLeadStore } from '../../store'
+import { useReminderStore } from '../../store'
 
 export function Layout({ children }: { children: ReactNode }) {
   const { reminders, addReminder, toggleReminder, deleteReminder } = useReminderStore()
-  const { leads } = useLeadStore()
 
   return (
     <div className="flex min-h-screen bg-slate-50">
       <Sidebar
         reminders={reminders}
-        leads={leads}
         onAddReminder={addReminder}
         onToggleReminder={toggleReminder}
         onDeleteReminder={deleteReminder}

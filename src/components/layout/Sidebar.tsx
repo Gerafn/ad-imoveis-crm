@@ -14,13 +14,12 @@ const navItems = [
 
 interface SidebarProps {
   reminders: Reminder[]
-  leads: { id: string; nome: string }[]
   onAddReminder: (data: Omit<Reminder, 'id' | 'createdAt'>) => void
   onToggleReminder: (id: string, concluido: boolean) => void
   onDeleteReminder: (id: string) => void
 }
 
-export function Sidebar({ reminders, leads, onAddReminder, onToggleReminder, onDeleteReminder }: SidebarProps) {
+export function Sidebar({ reminders, onAddReminder, onToggleReminder, onDeleteReminder }: SidebarProps) {
   const [reminderOpen, setReminderOpen] = useState(false)
   const pendentes = reminders.filter(r => !r.concluido).length
 
@@ -118,7 +117,6 @@ export function Sidebar({ reminders, leads, onAddReminder, onToggleReminder, onD
         open={reminderOpen}
         onClose={() => setReminderOpen(false)}
         reminders={reminders}
-        leads={leads}
         onAdd={onAddReminder}
         onToggle={onToggleReminder}
         onDelete={onDeleteReminder}
