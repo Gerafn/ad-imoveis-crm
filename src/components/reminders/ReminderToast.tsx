@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { Bell, X } from 'lucide-react'
-import { useReminderStore } from '../../store'
+import type { Reminder } from '../../types'
 
 interface Toast {
   id: string
@@ -8,8 +8,12 @@ interface Toast {
   descricao: string
 }
 
-export function ReminderToast() {
-  const { reminders, toggleReminder } = useReminderStore()
+interface ReminderToastProps {
+  reminders: Reminder[]
+  onComplete: (id: string) => void
+}
+
+export function ReminderToast({ reminders, onComplete }: ReminderToastProps) {
   const [toasts, setToasts] = useState<Toast[]>([])
   const notifiedRef = useRef<Set<string>>(new Set())
 
@@ -19,11 +23,15 @@ export function ReminderToast() {
       reminders.forEach(r => {
         if (r.concluido) return
         if (notifiedRef.current.has(r.id)) return
-        const dt = new Date(`${r.data}T${r.hora}`)
-        const diff = Math.abs(now.getTime() - dt.getTime())
-        if (diff <= 60000 && now >= dt) {
-          notifiedRef.current.add(r.id)
-          setToasts(prev => [...prev, { id: r.id, titulo: r.titulo, descricao: r.descricao }])
+        try {
+          const dt = new Date(`${r.data}T${r.hora}`)
+          const diff = now.getTime() - dt.getTime()
+          if (diff >= 0 && diff <= 60000) {
+            notifiedRef.current.add(r.id)
+            setToasts(prev => [...prev, { id: r.id, titulo: r.titulo, descricao: r.descricao }])
+          }
+        } catch {
+          // ignore invalid dates
         }
       })
     }
@@ -33,12 +41,10 @@ export function ReminderToast() {
     return () => clearInterval(interval)
   }, [reminders])
 
-  const dismiss = (id: string) => {
-    setToasts(prev => prev.filter(t => t.id !== id))
-  }
+  const dismiss = (id: string) => setToasts(prev => prev.filter(t => t.id !== id))
 
   const complete = (id: string) => {
-    toggleReminder(id, true)
+    onComplete(id)
     dismiss(id)
   }
 
@@ -54,10 +60,7 @@ export function ReminderToast() {
           <div className="flex-1 min-w-0">
             <p className="font-semibold text-slate-800 text-sm">{toast.titulo}</p>
             {toast.descricao && <p className="text-xs text-slate-500 mt-0.5 truncate">{toast.descricao}</p>}
-            <button
-              onClick={() => complete(toast.id)}
-              className="mt-2 text-xs font-medium text-[#1B4F72] hover:underline"
-            >
+            <button onClick={() => complete(toast.id)} className="mt-2 text-xs font-medium text-[#1B4F72] hover:underline">
               Marcar como concluído
             </button>
           </div>

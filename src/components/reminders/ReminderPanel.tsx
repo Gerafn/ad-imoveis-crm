@@ -1,7 +1,5 @@
 import { useState } from 'react'
 import { X, Plus, Check, Trash2, Bell, Clock } from 'lucide-react'
-import { useReminderStore } from '../../store'
-import { useLeadStore } from '../../store'
 import type { Reminder } from '../../types'
 import { Input, FieldWrapper, Select, Textarea } from '../ui/FormField'
 import { Button } from '../ui/Button'
@@ -10,6 +8,11 @@ import { formatDate } from '../../utils'
 interface ReminderPanelProps {
   open: boolean
   onClose: () => void
+  reminders: Reminder[]
+  leads: { id: string; nome: string }[]
+  onAdd: (data: Omit<Reminder, 'id' | 'createdAt'>) => void
+  onToggle: (id: string, concluido: boolean) => void
+  onDelete: (id: string) => void
 }
 
 function ReminderForm({ onSave, onCancel, leads }: {
@@ -60,112 +63,15 @@ function ReminderForm({ onSave, onCancel, leads }: {
 }
 
 function isVencido(data: string, hora: string) {
-  const dt = new Date(`${data}T${hora}`)
-  return dt < new Date()
+  try {
+    return new Date(`${data}T${hora}`) < new Date()
+  } catch {
+    return false
+  }
 }
 
 function isHoje(data: string) {
   return data === new Date().toISOString().split('T')[0]
-}
-
-export function ReminderPanel({ open, onClose }: ReminderPanelProps) {
-  const { reminders, addReminder, toggleReminder, deleteReminder } = useReminderStore()
-  const { leads } = useLeadStore()
-  const [showForm, setShowForm] = useState(false)
-  const [showConcluidos, setShowConcluidos] = useState(false)
-
-  const pendentes = reminders.filter(r => !r.concluido)
-  const concluidos = reminders.filter(r => r.concluido)
-
-  const handleSave = async (data: Omit<typeof reminders[0], 'id' | 'createdAt'>) => {
-    await addReminder(data)
-    setShowForm(false)
-  }
-
-  const leadMap = Object.fromEntries(leads.map(l => [l.id, l.nome]))
-
-  return (
-    <>
-      {/* Overlay */}
-      {open && (
-        <div className="fixed inset-0 bg-black/30 z-40 lg:hidden" onClick={onClose} />
-      )}
-
-      {/* Panel */}
-      <div className={`fixed top-0 right-0 h-full w-full sm:w-96 bg-white shadow-2xl z-50 flex flex-col transition-transform duration-300 ${open ? 'translate-x-0' : 'translate-x-full'}`}>
-        {/* Header */}
-        <div className="flex items-center justify-between px-5 py-4 border-b border-slate-100">
-          <div className="flex items-center gap-2">
-            <Bell size={18} className="text-[#1B4F72]" />
-            <span className="font-semibold text-slate-800">Lembretes</span>
-            {pendentes.length > 0 && (
-              <span className="bg-[#F39C12] text-white text-xs font-bold px-2 py-0.5 rounded-full">{pendentes.length}</span>
-            )}
-          </div>
-          <button onClick={onClose} className="p-1.5 rounded-lg hover:bg-slate-100 text-slate-400 transition-colors">
-            <X size={18} />
-          </button>
-        </div>
-
-        {/* Content */}
-        <div className="flex-1 overflow-y-auto p-4 space-y-3">
-          {!showForm && (
-            <button
-              onClick={() => setShowForm(true)}
-              className="w-full flex items-center gap-2 px-4 py-2.5 rounded-xl border-2 border-dashed border-slate-200 text-slate-400 hover:border-[#1B4F72] hover:text-[#1B4F72] transition-colors text-sm font-medium"
-            >
-              <Plus size={16} /> Novo lembrete
-            </button>
-          )}
-
-          {showForm && (
-            <ReminderForm
-              onSave={handleSave}
-              onCancel={() => setShowForm(false)}
-              leads={leads}
-            />
-          )}
-
-          {pendentes.length === 0 && !showForm && (
-            <div className="text-center py-10">
-              <Bell size={32} className="mx-auto text-slate-200 mb-2" />
-              <p className="text-sm text-slate-400">Nenhum lembrete pendente</p>
-            </div>
-          )}
-
-          {pendentes.map(r => (
-            <ReminderCard
-              key={r.id}
-              reminder={r}
-              leadNome={r.leadId ? leadMap[r.leadId] : undefined}
-              onToggle={() => toggleReminder(r.id, true)}
-              onDelete={() => deleteReminder(r.id)}
-            />
-          ))}
-
-          {concluidos.length > 0 && (
-            <button
-              onClick={() => setShowConcluidos(p => !p)}
-              className="text-xs text-slate-400 hover:text-slate-600 transition-colors w-full text-center pt-2"
-            >
-              {showConcluidos ? 'Ocultar' : `Ver ${concluidos.length} concluído${concluidos.length !== 1 ? 's' : ''}`}
-            </button>
-          )}
-
-          {showConcluidos && concluidos.map(r => (
-            <ReminderCard
-              key={r.id}
-              reminder={r}
-              leadNome={r.leadId ? leadMap[r.leadId] : undefined}
-              onToggle={() => toggleReminder(r.id, false)}
-              onDelete={() => deleteReminder(r.id)}
-              concluido
-            />
-          ))}
-        </div>
-      </div>
-    </>
-  )
 }
 
 function ReminderCard({ reminder, leadNome, onToggle, onDelete, concluido }: {
@@ -203,5 +109,93 @@ function ReminderCard({ reminder, leadNome, onToggle, onDelete, concluido }: {
         <Trash2 size={13} />
       </button>
     </div>
+  )
+}
+
+export function ReminderPanel({ open, onClose, reminders, leads, onAdd, onToggle, onDelete }: ReminderPanelProps) {
+  const [showForm, setShowForm] = useState(false)
+  const [showConcluidos, setShowConcluidos] = useState(false)
+
+  const pendentes = reminders.filter(r => !r.concluido)
+  const concluidos = reminders.filter(r => r.concluido)
+  const leadMap = Object.fromEntries(leads.map(l => [l.id, l.nome]))
+
+  const handleSave = (data: Omit<Reminder, 'id' | 'createdAt'>) => {
+    onAdd(data)
+    setShowForm(false)
+  }
+
+  return (
+    <>
+      {open && (
+        <div className="fixed inset-0 bg-black/30 z-40 lg:hidden" onClick={onClose} />
+      )}
+      <div className={`fixed top-0 right-0 h-full w-full sm:w-96 bg-white shadow-2xl z-50 flex flex-col transition-transform duration-300 ${open ? 'translate-x-0' : 'translate-x-full'}`}>
+        <div className="flex items-center justify-between px-5 py-4 border-b border-slate-100">
+          <div className="flex items-center gap-2">
+            <Bell size={18} className="text-[#1B4F72]" />
+            <span className="font-semibold text-slate-800">Lembretes</span>
+            {pendentes.length > 0 && (
+              <span className="bg-[#F39C12] text-white text-xs font-bold px-2 py-0.5 rounded-full">{pendentes.length}</span>
+            )}
+          </div>
+          <button onClick={onClose} className="p-1.5 rounded-lg hover:bg-slate-100 text-slate-400 transition-colors">
+            <X size={18} />
+          </button>
+        </div>
+
+        <div className="flex-1 overflow-y-auto p-4 space-y-3">
+          {!showForm && (
+            <button
+              onClick={() => setShowForm(true)}
+              className="w-full flex items-center gap-2 px-4 py-2.5 rounded-xl border-2 border-dashed border-slate-200 text-slate-400 hover:border-[#1B4F72] hover:text-[#1B4F72] transition-colors text-sm font-medium"
+            >
+              <Plus size={16} /> Novo lembrete
+            </button>
+          )}
+
+          {showForm && (
+            <ReminderForm onSave={handleSave} onCancel={() => setShowForm(false)} leads={leads} />
+          )}
+
+          {pendentes.length === 0 && !showForm && (
+            <div className="text-center py-10">
+              <Bell size={32} className="mx-auto text-slate-200 mb-2" />
+              <p className="text-sm text-slate-400">Nenhum lembrete pendente</p>
+            </div>
+          )}
+
+          {pendentes.map(r => (
+            <ReminderCard
+              key={r.id}
+              reminder={r}
+              leadNome={r.leadId ? leadMap[r.leadId] : undefined}
+              onToggle={() => onToggle(r.id, true)}
+              onDelete={() => onDelete(r.id)}
+            />
+          ))}
+
+          {concluidos.length > 0 && (
+            <button
+              onClick={() => setShowConcluidos(p => !p)}
+              className="text-xs text-slate-400 hover:text-slate-600 transition-colors w-full text-center pt-2"
+            >
+              {showConcluidos ? 'Ocultar' : `Ver ${concluidos.length} concluído${concluidos.length !== 1 ? 's' : ''}`}
+            </button>
+          )}
+
+          {showConcluidos && concluidos.map(r => (
+            <ReminderCard
+              key={r.id}
+              reminder={r}
+              leadNome={r.leadId ? leadMap[r.leadId] : undefined}
+              onToggle={() => onToggle(r.id, false)}
+              onDelete={() => onDelete(r.id)}
+              concluido
+            />
+          ))}
+        </div>
+      </div>
+    </>
   )
 }
