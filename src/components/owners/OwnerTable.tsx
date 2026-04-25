@@ -22,6 +22,8 @@ export function OwnerTable({ owners, onEdit, onDelete }: OwnerTableProps) {
   const [search, setSearch] = useState('')
   const [filterTipo, setFilterTipo] = useState<OwnerTipo | ''>('')
   const [filterNegocio, setFilterNegocio] = useState<OwnerNegocio | ''>('')
+  const [filterDataDe, setFilterDataDe] = useState('')
+  const [filterDataAte, setFilterDataAte] = useState('')
   const [page, setPage] = useState(1)
   const [deleteId, setDeleteId] = useState<string | null>(null)
 
@@ -29,6 +31,8 @@ export function OwnerTable({ owners, onEdit, onDelete }: OwnerTableProps) {
     if (search && !o.nome.toLowerCase().includes(search.toLowerCase())) return false
     if (filterTipo && o.tipo !== filterTipo) return false
     if (filterNegocio && o.negocio !== filterNegocio) return false
+    if (filterDataDe && o.data < filterDataDe) return false
+    if (filterDataAte && o.data > filterDataAte) return false
     return true
   })
 
@@ -37,7 +41,7 @@ export function OwnerTable({ owners, onEdit, onDelete }: OwnerTableProps) {
 
   return (
     <div>
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-4">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-3">
         <Input
           placeholder="Buscar por nome..."
           value={search}
@@ -52,6 +56,34 @@ export function OwnerTable({ owners, onEdit, onDelete }: OwnerTableProps) {
           <option value="">Negócio</option>
           {OWNER_NEGOCIOS.map(n => <option key={n}>{n}</option>)}
         </Select>
+      </div>
+      <div className="flex flex-wrap items-center gap-3 mb-4">
+        <div className="flex items-center gap-2">
+          <label className="text-xs text-slate-500 whitespace-nowrap">De:</label>
+          <input
+            type="date"
+            value={filterDataDe}
+            onChange={e => { setFilterDataDe(e.target.value); setPage(1) }}
+            className="text-sm border border-slate-200 rounded-lg px-3 py-2 text-slate-700 focus:outline-none focus:ring-2 focus:ring-[#1B4F72]/20 focus:border-[#1B4F72]"
+          />
+        </div>
+        <div className="flex items-center gap-2">
+          <label className="text-xs text-slate-500 whitespace-nowrap">Até:</label>
+          <input
+            type="date"
+            value={filterDataAte}
+            onChange={e => { setFilterDataAte(e.target.value); setPage(1) }}
+            className="text-sm border border-slate-200 rounded-lg px-3 py-2 text-slate-700 focus:outline-none focus:ring-2 focus:ring-[#1B4F72]/20 focus:border-[#1B4F72]"
+          />
+        </div>
+        {(filterDataDe || filterDataAte) && (
+          <button
+            onClick={() => { setFilterDataDe(''); setFilterDataAte(''); setPage(1) }}
+            className="text-xs text-slate-400 hover:text-red-500 underline transition-colors"
+          >
+            Limpar datas
+          </button>
+        )}
       </div>
 
       <p className="text-xs text-slate-400 mb-3">{filtered.length} proprietário{filtered.length !== 1 ? 's' : ''}</p>
