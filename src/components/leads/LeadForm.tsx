@@ -80,6 +80,9 @@ export function LeadForm({ initial, customFields = [], onSubmit, onCancel }: Lea
         <FieldWrapper label="Nome do Cliente" error={errors.nome?.message} required>
           <Input placeholder="Ex: João Silva" {...register('nome')} />
         </FieldWrapper>
+        <FieldWrapper label="Imóvel de Interesse">
+          <Input placeholder="Ex: Apartamento 2 quartos" {...register('imovel')} />
+        </FieldWrapper>
         <FieldWrapper label="Telefone" error={errors.telefone?.message} required>
           <Input placeholder="(11) 99999-9999" {...register('telefone')} />
         </FieldWrapper>
@@ -95,9 +98,6 @@ export function LeadForm({ initial, customFields = [], onSubmit, onCancel }: Lea
               onChange={e => setTipoCustom(e.target.value)}
             />
           )}
-        </FieldWrapper>
-        <FieldWrapper label="Imóvel de Interesse">
-          <Input placeholder="Ex: Apartamento 2 quartos" {...register('imovel')} />
         </FieldWrapper>
         <FieldWrapper label="Valor (R$)">
           <Input type="number" min={0} step={1000} {...register('valor')} />
