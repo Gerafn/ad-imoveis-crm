@@ -99,17 +99,17 @@ export function LeadForm({ initial, customFields = [], onSubmit, onCancel }: Lea
         <FieldWrapper label="Imóvel de Interesse">
           <Input placeholder="Ex: Apartamento 2 quartos" {...register('imovel')} />
         </FieldWrapper>
-        <FieldWrapper label="Meio de Contato" required>
-          <Select {...register('meio')}>
-            {LEAD_MEIOS.map(m => <option key={m}>{m}</option>)}
-          </Select>
-        </FieldWrapper>
         <FieldWrapper label="Valor (R$)">
           <Input type="number" min={0} step={1000} {...register('valor')} />
         </FieldWrapper>
         <FieldWrapper label="Fase do Funil" required>
           <Select {...register('fase')}>
             {LEAD_FASES.map(f => <option key={f}>{f}</option>)}
+          </Select>
+        </FieldWrapper>
+        <FieldWrapper label="Meio de Contato" required>
+          <Select {...register('meio')}>
+            {LEAD_MEIOS.map(m => <option key={m}>{m}</option>)}
           </Select>
         </FieldWrapper>
         <FieldWrapper label="Temperatura" required>
