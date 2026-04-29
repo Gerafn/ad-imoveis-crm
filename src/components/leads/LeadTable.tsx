@@ -155,10 +155,11 @@ export function LeadTable({ leads, onEdit, onDelete }: LeadTableProps) {
                     <th className="text-left px-4 py-3 text-xs font-semibold text-slate-500 uppercase tracking-wide">Data</th>
                     <th className="text-left px-4 py-3 text-xs font-semibold text-slate-500 uppercase tracking-wide">Cliente</th>
                     <th className="text-left px-4 py-3 text-xs font-semibold text-slate-500 uppercase tracking-wide">Tipo</th>
-                    <th className="text-left px-4 py-3 text-xs font-semibold text-slate-500 uppercase tracking-wide">Canal</th>
+                    <th className="text-left px-4 py-3 text-xs font-semibold text-slate-500 uppercase tracking-wide">Imóvel</th>
                     <th className="text-left px-4 py-3 text-xs font-semibold text-slate-500 uppercase tracking-wide">Valor</th>
                     <th className="text-left px-4 py-3 text-xs font-semibold text-slate-500 uppercase tracking-wide">Fase</th>
                     <th className="text-left px-4 py-3 text-xs font-semibold text-slate-500 uppercase tracking-wide">Temp.</th>
+                    <th className="text-left px-4 py-3 text-xs font-semibold text-slate-500 uppercase tracking-wide">Canal</th>
                     <th className="px-4 py-3" />
                   </tr>
                 </thead>
@@ -171,10 +172,11 @@ export function LeadTable({ leads, onEdit, onDelete }: LeadTableProps) {
                         <PhoneMenu telefone={lead.telefone} />
                       </td>
                       <td className="px-4 py-3 text-slate-600 whitespace-nowrap">{lead.tipo}</td>
-                      <td className="px-4 py-3 text-slate-600 whitespace-nowrap">{lead.meio}</td>
+                      <td className="px-4 py-3 text-slate-600 whitespace-nowrap">{lead.imovel || '-'}</td>
                       <td className="px-4 py-3 text-slate-700 font-mono whitespace-nowrap">{lead.valor > 0 ? formatCurrency(lead.valor) : '-'}</td>
                       <td className="px-4 py-3"><FaseBadge value={lead.fase} /></td>
                       <td className="px-4 py-3"><TemperatureBadge value={lead.temperatura} /></td>
+                      <td className="px-4 py-3 text-slate-600 whitespace-nowrap">{lead.meio}</td>
                       <td className="px-4 py-3">
                         <div className="flex items-center gap-1 justify-end">
                           <button onClick={() => onEdit(lead)} className="p-1.5 rounded-lg hover:bg-slate-100 text-slate-400 hover:text-[#1B4F72] transition-colors">
